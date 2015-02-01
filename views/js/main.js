@@ -236,7 +236,7 @@ var pizzaSizes = {1: "Small", 2: "Medium", 3: "Large"};
 // Generate sine and cosine lookup table for values 0 to 4
 var sinTable = [];
 var cosTable = [];
-var spread = screen.width/2.2
+var spread = screen.width/3.5
 for (var idx = 0; idx < 4; idx++) {
   sinTable[idx] = spread * Math.sin(idx);
   cosTable[idx] = spread * Math.cos(idx);
@@ -425,7 +425,7 @@ function updatePositions() {
   var cosTopScroll = Math.cos(relScrollTop);
   for (var i = 0; i < items.length; i++) {
     // var phase = Math.sin((document.body.scrollTop / 1250) + i);
-    var phase = sinTopScroll * cosTable[i % 4] + cosTopScroll * sinTable[i % 4];
+    var phase = sinTopScroll * cosTable[i % 4] + cosTopScroll * sinTable[i % 4] - 50;
     items[i].style.transform = "translateX(" + phase + "px)";
   }
 
