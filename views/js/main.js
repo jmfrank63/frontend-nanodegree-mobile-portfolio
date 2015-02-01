@@ -148,6 +148,7 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+// The adjective list of lists
 var adjectivesList = [
       ["dark","morbid", "scary", "spooky", "gothic", "deviant", "creepy", "sadistic", "black", "dangerous", "dejected", "haunted", 
       "morose", "tragic", "shattered", "broken", "sad", "melancholy", "somber", "dark", "gloomy", "homicidal", "murderous", "shady", "misty", 
@@ -186,6 +187,7 @@ var adjectivesList = [
       "extinct", "galactic"]
       ];
 
+// the nouns list of lists
 var nounsList = [
       ["flamingo", "hedgehog", "owl", "elephant", "pussycat", "alligator", "dachsund", "poodle", "beagle", "crocodile", "kangaroo", 
       "wallaby", "woodpecker", "eagle", "falcon", "canary", "parrot", "parakeet", "hamster", "gerbil", "squirrel", "rat", "dove", "toucan", 
@@ -227,16 +229,17 @@ var nounsList = [
       "universe", "gravity", "darkMatter", "constellation", "circuit", "asteroid"]
       ];
 
+// Lookups for sizes and names of them
 var sizeSwitcher = { 1: 0.25, 2: 0.3333, 3: 0.5};
 var pizzaSizes = {1: "Small", 2: "Medium", 3: "Large"};
-var pizzaImages = {1: "images/pizza-small.png", 2: "images/pizza-medium.png", 3: "images/pizza-large.png"};
-var pizzeriaImages = {1: "images/pizzeria-small.jpg", 2: "images/pizzeria-medium.jpg", 3: "images/pizzeria-large.jpg"};
 
+// Generate sine and cosine lookup table for values 0 to 4
 var sinTable = [];
 var cosTable = [];
-for (var idx = 0; idx < 5; idx++) {
-  sinTable[idx] = 100 * Math.sin(idx);
-  cosTable[idx] = 100 * Math.cos(idx);
+var spread = screen.width/2.2
+for (var idx = 0; idx < 4; idx++) {
+  sinTable[idx] = spread * Math.sin(idx);
+  cosTable[idx] = spread * Math.cos(idx);
 }
 
 
@@ -331,9 +334,8 @@ var pizzaElementGenerator = function(i) {
   pizzaContainer.id = "pizza" + i;                // gives each pizza element a unique id
   pizzaImageContainer.classList.add("col-md-6");
 
-  pizzaImage.src = "images/pizza-medium.png";
+  pizzaImage.src = "images/pizza-large.png";
   pizzaImage.classList.add("img-responsive");
-  pizzaImage.style.minWidth = "100%";
   pizzaImageContainer.appendChild(pizzaImage);
   pizzaContainer.appendChild(pizzaImageContainer);
 
@@ -369,13 +371,9 @@ var resizePizzas = function(size) {
   var newsize = sizeSwitcher[size];
   var dx = newsize * windowwidth - oldwidth;
   var newwidth = (pizzaList[0].offsetWidth + dx ) + 'px';
-  for (var i = 0; i < 2; i++) {
+
+  for (var i = 0; i < pizzaList.length; i++) {
     pizzaList[i].style.width = newwidth;
-    pizzaList[i].querySelector("img").src = pizzeriaImages[size];
-  }
-  for (var i = 2; i < pizzaList.length; i++) {
-    pizzaList[i].style.width = newwidth;
-    pizzaList[i].querySelector("img").src = pizzaImages[size];
   }
 
   // User Timing API is awesome
@@ -427,8 +425,8 @@ function updatePositions() {
   var cosTopScroll = Math.cos(relScrollTop);
   for (var i = 0; i < items.length; i++) {
     // var phase = Math.sin((document.body.scrollTop / 1250) + i);
-    var phase = sinTopScroll * cosTable[i % 5] + cosTopScroll * sinTable[i % 5];
-    items[i].style.left = items[i].basicLeft + phase + 'px';
+    var phase = sinTopScroll * cosTable[i % 4] + cosTopScroll * sinTable[i % 4];
+    items[i].style.transform = "translateX(" + phase + "px)";
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -446,18 +444,18 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 312;
-  for (var i = 0; i < 24; i++) {
+  var cols = 4;
+  var s = 256;
+  for (var i = 0; i < 16; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza-scroll.png";
-    elem.width = "77";
-    elem.height = "100";
+    // elem.width = "77";
+    // elem.height = "100";
     elem.style.height = "100px";
     elem.style.width = "77px";
-    elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    //elem.basicLeft = (i % cols) * s;
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
   updatePositions();
