@@ -30,6 +30,8 @@ form {
 }
 
 .mover {
+  -webkit-backface-visibility: hidden;
+	-webkit-perspective: 100;
   position: fixed;
   width: 256px;
   z-index: -1;

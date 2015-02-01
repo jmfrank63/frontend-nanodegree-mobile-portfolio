@@ -1,0 +1,15 @@
+/* All in one selector */
+@media screen and (min-width : 321px)
+{
+  .mobimg {
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url(../img/mobilewebdev-orig.jpg) no-repeat;
+    background-size: contain;
+    width: 602px; /* Width of new image */
+    height: 306px; /* Height of new image */
+    padding-left: 602px; /* Equal to width of new image */
+  }
+}

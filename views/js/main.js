@@ -283,7 +283,20 @@ function getNoun(y) {
 };
 
 var adjectives = ["dark", "color", "whimsical", "shiny", "noise", "apocalyptic", "insulting", "praise", "scientific"];  // types of adjectives for pizza titles
-var nouns = ["animals", "everyday", "fantasy", "gross", "horror", "jewelry", "places", "scifi"];                        // types of nouns for pizza titles
+var nouns = ["animals", "everyday", "fantasy", "gross", "horror", "jewelry", "places", "scifi"];// types of nouns for pizza titles
+
+var sizeSwitcher = { 1: 0.25, 2: 0.3333, 3: 0.5};
+var pizzaSizes = {1: "Small", 2: "Medium", 3: "Large"};
+var pizzaImages = {1: "images/pizza-small.png", 2: "images/pizza-medium.png", 3: "images/pizza-large.png"};
+var pizzeriaImages = {1: "images/pizzeria-small.jpg", 2: "images/pizzeria-medium.jpg", 3: "images/pizzeria-large.jpg"};
+
+var sinTable = [];
+var cosTable = [];
+for (var idx = 0; idx < 5; idx++) {
+  sinTable[idx] = 100 * Math.sin(idx);
+  cosTable[idx] = 100 * Math.cos(idx);
+}
+
 
 // Generates random numbers for getAdj and getNoun functions and returns a new pizza name
 function generator(adj, noun) {
@@ -378,8 +391,9 @@ var pizzaElementGenerator = function(i) {
   pizzaContainer.id = "pizza" + i;                // gives each pizza element a unique id
   pizzaImageContainer.classList.add("col-md-6");
 
-  pizzaImage.src = "images/pizza.png";
+  pizzaImage.src = "images/pizza-medium.png";
   pizzaImage.classList.add("img-responsive");
+  pizzaImage.style.minWidth = "100%";
   pizzaImageContainer.appendChild(pizzaImage);
   pizzaContainer.appendChild(pizzaImageContainer);
 
@@ -403,61 +417,40 @@ var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
   // Changes the value for the size of the pizza above the slider
-  function changeSliderLabel(size) {
-    switch(size) {
-      case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
-        return;
-      case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
-        return;
-      case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
-        return;
-      default:
-        console.log("bug in changeSliderLabel");
-    }
-  }
-
-  changeSliderLabel(size);
-
+  document.querySelector("#pizzaSize").innerHTML = pizzaSizes[size];
+  
+  // determine window width
+  var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
+  
   // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineDx (elem, size) {
-    var oldwidth = elem.offsetWidth;
-    var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldsize = oldwidth / windowwidth;
-
-    // TODO: change to 3 sizes? no more xl?
-    // Changes the slider value to a percent width
-    function sizeSwitcher (size) {
-      switch(size) {
-        case "1":
-          return 0.25;
-        case "2":
-          return 0.3333;
-        case "3":
-          return 0.5;
-        default:
-          console.log("bug in sizeSwitcher");
-      }
-    }
-
-    var newsize = sizeSwitcher(size);
-    var dx = (newsize - oldsize) * windowwidth;
-
-    return dx;
-  }
+  // function determineDx (elem, size) {
+  //   var dx = ( - elem.offsetWidth / windowwidth) * windowwidth;
+  //   return dx;
+  // }  // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
+  // function determineDx (elem, size) {
+  //   var oldwidth = elem.offsetWidth;
+  //   var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
+  //   var newsize = sizeSwitcher[size];
+  //   var dx = newsize * windowwidth - oldwidth;
+  //   return dx;
+  // }
 
   // Iterates through pizza elements on the page and changes their widths
-  function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
-    }
+  var pizzaList = document.querySelectorAll(".randomPizzaContainer");
+  // Calculate dx, the size difference to change a pizza element from one size to another.
+  var oldwidth = pizzaList[0].offsetWidth;
+  var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
+  var newsize = sizeSwitcher[size];
+  var dx = newsize * windowwidth - oldwidth;
+  var newwidth = (pizzaList[0].offsetWidth + dx ) + 'px';
+  for (var i = 0; i < 2; i++) {
+    pizzaList[i].style.width = newwidth;
+    pizzaList[i].querySelector("img").src = pizzeriaImages[size];
   }
-
-  changePizzaSizes(size);
+  for (var i = 2; i < pizzaList.length; i++) {
+    pizzaList[i].style.width = newwidth;
+    pizzaList[i].querySelector("img").src = pizzaImages[size];
+  }
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -503,9 +496,13 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
+  var relScrollTop = document.body.scrollTop / 1250;
+  var sinTopScroll = Math.sin(relScrollTop);
+  var cosTopScroll = Math.cos(relScrollTop);
   for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    // var phase = Math.sin((document.body.scrollTop / 1250) + i);
+    var phase = sinTopScroll * cosTable[i % 5] + cosTopScroll * sinTable[i % 5];
+    items[i].style.left = items[i].basicLeft + phase + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -524,13 +521,15 @@ window.addEventListener('scroll', updatePositions);
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
-  var s = 256;
-  for (var i = 0; i < 200; i++) {
+  var s = 312;
+  for (var i = 0; i < 24; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
-    elem.src = "images/pizza.png";
+    elem.src = "images/pizza-scroll.png";
+    elem.width = "77";
+    elem.height = "100";
     elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    elem.style.width = "77px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
