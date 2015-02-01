@@ -1,4 +1,4 @@
-Intructions how to optimize the portfolio
+Instructions how to optimize the portfolio
 
 For index.html
 
