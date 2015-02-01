@@ -48,4 +48,31 @@ For pizza.html
 1. Resized pizzeria.jpg using gimp to 360x270 and 256 colors
    then minified by jpegoptim
    
-2. 
+2. Rename pizza.png and pizzeria.jpg to -small, -medium and -large variants and resize them in
+   using gimp to their respective sizes for the desktop variant.
+   
+3. Minify style.css and inline it. Minify pizza.html
+
+4. Change default pizza.png as well as pizzeria.jpg to -medium variant.Change
+
+5. Optimize function updatePositions in main.js:
+   a. pull scrollTop calculation with division out of the loop
+   b. use sin addition theorem to reduce calculations to two multiplications
+      and one addition
+   c. use lookup table for the sine and cosine values of the index (only 5 different)
+   d. reduce number of pizzas to 24 (3 rows sufficient for most monitors)
+   
+6. Optimize resizePizzas by inlining all code of functions
+   that are only called once
+   Set optimized images sizes for small medium and large
+   Replace functions with switch case by arrays or objects
+   
+7. Optimize Pizza Name creation
+   Change from switch case to array lookup O(n) vs O(1)
+   Generate pizza name by lookups to adjectives and to noun
+   avoiding several function calls
+   
+   Not done: Write all adjectives in Upper Case and remove
+   call to capitalize
+   
+
