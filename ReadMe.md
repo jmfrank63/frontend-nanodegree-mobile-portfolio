@@ -131,3 +131,8 @@ For main.js
    The difference could be due to the 965 chipset being at the outer
    fringe of its capabilities.
    
+Sorry:
+
+I apologize for being so sloopy. I should have commented things
+better which would have saved you work. I hope not to make that mistake
+a second time.
