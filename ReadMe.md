@@ -59,34 +59,64 @@ For pizza.html
 4. Change default pizza.png as well as pizzeria.jpg to -medium variant as pointed
    out in #2.
 
-5. Optimize function updatePositions in main.js:
+For main.js
+
+1. Optimize function updatePositions:
+   
    a. pull scrollTop calculation with division out of the loop
+
    b. use sin addition theorem to reduce calculations to two multiplications
       and one addition
+      
    c. use lookup table for the sine and cosine values of the index (only 4 different)
-   d. reduce number of pizzas per row to 4
-   e. reduce number of pizzas to 16 (4 rows sufficient for most monitors)
-   f. change movement to transform as it hardware accelerated
+      this is much faster than the costly sine function
    
-6. Optimize resizePizzas by inlining all code of functions
+   d. reduce number of pizzas per row to 4
+      as we don't need more for a decent user experience
+   
+   e. reduce number of pizzas to 16 (4 rows sufficient for most monitors)
+      16 = 4 x 4. Four rows are visible so no more are needed.
+   
+   f. change movement to transform() as it hardware accelerated
+   
+   g. use getElementsByClassName and getElementById to speed up getting DOM elements
+      see comments in main.js
+   
+2. Optimize resizePizzas function by inlining all code of functions
    that are only called once
    Set optimized images sizes for small medium and large
    Replace functions with switch case by arrays or objects
    
-7. Optimize Pizza Name creation
+3. Optimize Pizza Name creation
    Change from switch case to array lookup O(n) vs O(1)
    Generate pizza name by lookups to adjectives and to noun
    avoiding several function calls
    
-   Not done: Write all adjectives in Upper Case and remove
-   call to capitalize. Just removing the call and rendering
-   them in lowercase shows little improvement.
+4. Uppercase nouns and adjectives in source file.
+   var uN = [];
+   for ( var i = 0; i < nounsList.length; i++){
+       uN[i] = [];
+       for ( var j = 0; j < nounsList[i].length; j++){
+           uN[i].push(nounsList[i][j].capitalize());
+       }
+   };
+   JSON.stringify(uN);
+   and
+   var uC = [];
+   for ( var i = 0; i < adjectivesList.length; i++){
+       uC[i] = [];
+       for ( var j = 0; j < adjectivesList[i].length; j++){
+           uC[i].push(adjectivesList[i][j].capitalize()); 
+       }
+   };
+   JSON.stringify(uC);
+   to uppercase the code directly in the console.
+   Copied result over to the main.js file.
+   Removed call to capitalize and the function itself
+
+5. Checked main.js with eslint.
    
-   Also not done: As the overall goals of the project seem
-   to be met no effort in imporvement for building up the
-   DOM for a pizza element has been made. It might be that
-   building up a string for the ul element and adding this
-   in one call to innerHTML could give some tiny improvements.
+   Enviroments for testing:
    
    Measurements of framerates have been done on two different
    computers: 
@@ -100,5 +130,4 @@ For pizza.html
    Vaio measurements showed sometimes a perfect result sometimes a fail.
    The difference could be due to the 965 chipset being at the outer
    fringe of its capabilities.
-   
    
